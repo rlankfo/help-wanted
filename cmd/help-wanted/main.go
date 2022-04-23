@@ -9,48 +9,37 @@ import (
 	"time"
 
 	"github.com/google/go-github/v43/github"
+	hw "github.com/rlankfo/help-wanted"
 )
-
-var defaultConfig = config{
-	hours:        72,
-	label:        "help wanted",
-	organization: "grafana",
-}
-
-type config struct {
-	hours        int
-	label        string
-	organization string
-}
-
-func (c *config) registerFlags(f *flag.FlagSet) {
-	f.IntVar(&c.hours, "hours", defaultConfig.hours,
-		"Hours since issue was created.")
-	f.StringVar(&c.label, "label", defaultConfig.label,
-		"Find issues with this label.")
-	f.StringVar(&c.organization, "org", defaultConfig.organization,
-		"Github organization to search.")
-
-}
 
 func main() {
 	var (
 		issues = make(chan *github.Issue)
 		wg     sync.WaitGroup
-		cfg    config
+		cfg    hw.Config
 	)
-	cfg.registerFlags(flag.CommandLine)
-	flag.Parse()
+	cfg.RegisterFlags(flag.CommandLine)
+	cfg.ParseFlags()
 
-	d, err := time.ParseDuration(fmt.Sprintf("%dh", cfg.hours))
+	d, err := time.ParseDuration(fmt.Sprintf("%dh", cfg.Hours))
 	if err != nil {
 		fmt.Println("error parsing duration: ", err)
 		os.Exit(-1)
 	}
-	query := fmt.Sprintf("is:issue is:open org:%s label:\"help wanted\" created:>=%s archived:false",
-		cfg.organization, time.Now().Add(-d).Format(time.RFC3339))
+	orgs := ""
+	for _, org := range cfg.Organizations {
+		orgs = fmt.Sprintf("org:%s %s", org, orgs)
+	}
+	labels := ""
+	for _, label := range cfg.Labels {
+		labels = fmt.Sprintf("label:\"%s\" %s", label, labels)
+	}
+	query := fmt.Sprintf("is:issue is:open %s %s created:>=%s archived:false",
+		orgs, labels, time.Now().Add(-d).Format(time.RFC3339))
 
-	fmt.Println(query)
+	if cfg.Verbose {
+		fmt.Println(query)
+	}
 
 	wg.Add(1)
 	go func(issues <-chan *github.Issue) {

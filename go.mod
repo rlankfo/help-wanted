@@ -1,4 +1,4 @@
-module github.com/rlankfo/helpwanted
+module github.com/rlankfo/help-wanted
 
 go 1.17
 

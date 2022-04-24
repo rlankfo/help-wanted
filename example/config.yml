@@ -1,0 +1,7 @@
+verbose: true
+hours: 72
+labels:
+- "help wanted"
+orgs:
+- "ohmyzsh"
+- "homebrew"

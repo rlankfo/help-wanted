@@ -20,6 +20,7 @@ func main() {
 	)
 	cfg.RegisterFlags(flag.CommandLine)
 	cfg.ParseFlags()
+	cfg.LoadConfigFile(flag.CommandLine)
 
 	d, err := time.ParseDuration(fmt.Sprintf("%dh", cfg.Hours))
 	if err != nil {

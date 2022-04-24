@@ -19,12 +19,6 @@ Usage of ./help-wanted:
 
 Feel free to contribute PRs to make this project better!
 
-## Installation
-
-```
-brew install help-wanted
-```
-
 ## Configuration
 By default, the program will load it's config from `~/.config/help-wanted/config.yml`. These values can be overriden with command line args.
 
